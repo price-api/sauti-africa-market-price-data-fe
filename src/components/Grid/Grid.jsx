@@ -89,7 +89,7 @@ const Grid = ({ token }) => {
 
   // Options for dropDown
   let countriesOptions,
-    marketOptions,
+    marketOptions = [],
     pCategoryOptions,
     pAggregatorOptions,
     productOptions
@@ -100,7 +100,7 @@ const Grid = ({ token }) => {
       text: country.country
     }))
     marketOptions = list.markets.map((market, index) => ({
-      key: `market-${index}`,
+      key: `market-${market.country}-${index}`, // associate country code with market
       text: market.market,
       value: market.market
     }))
@@ -131,7 +131,31 @@ const Grid = ({ token }) => {
         queryUpdater(null)
       }
     }
-    // localStorage.setItem(prefix, JSON.stringify(value))
+    if (prefix === 'c') {
+      // If updating the selected countries, also update the markets dropdown
+      // If the list of selected countries isn't empty, look through the list of known markets,
+      // And add any which are associated with the selected countries to a new array,
+      // Else assign an empty array
+      const availableMarkets = value.length
+        ? marketOptions.reduce(
+            (marketNames, market) =>
+              value.some(country => market.key.includes(country)) //
+                ? marketNames.concat(market.text)
+                : marketNames,
+            []
+          )
+        : []
+      // If there are any currently selected countries, filter the list of currently selected markets
+      // to include only those associated with those countries
+      const updatedMarkets = value.length
+        ? markets.filter(market => availableMarkets.includes(market))
+        : []
+      // Update the Markets dropdown and the associated query string
+      setMarkets(updatedMarkets)
+      setMarketQuery(
+        updatedMarkets.length ? `&m=${updatedMarkets.join(`&m=`)}` : null
+      )
+    }
   }
 
   // Moment timestamps need special handling before running JSON.stringify on them
@@ -358,7 +382,7 @@ const Grid = ({ token }) => {
           )}&endDate=${dateRanges[1].format('YYYY-MM-DD')}`
         : ''
     setErr(false)
-    const query = `https://market-price-api.herokuapp.com//sauti/client/export/?currency=${currency ||
+    const query = `https://sauti-africa-market-master.herokuapp.com/sauti/client/export/?currency=${currency ||
       'USD'}${countryQuery || ''}${marketQuery || ''}${pCatQuery ||
       ''}${pAggQuery || ''}${productQuery || ''}${dateRangeQuery}`
     axiosWithAuth([token], NOCACHE)
@@ -443,7 +467,16 @@ const Grid = ({ token }) => {
                   multiple
                   search
                   selection
-                  options={marketOptions || []}
+                  options={
+                    // If Countries dropdown isn't empty, filter the market dropdown list to only include markets associated with specified country/countries
+                    countries.length
+                      ? marketOptions.filter(market =>
+                          countries.some(country =>
+                            market.key.includes(country)
+                          )
+                        )
+                      : marketOptions || []
+                  }
                   onChange={(e, { value }) =>
                     dropdownHandler(value, setMarkets, setMarketQuery, 'm')
                   }
