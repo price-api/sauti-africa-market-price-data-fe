@@ -31,7 +31,7 @@ export default function PmPlayground() {
       .get(`/sauti/client/playground/latest?${value}`, {
         baseURL:
           process.env.NODE_ENV !== 'development'
-            ? 'https://market-price-api.herokuapp.com//'
+            ? 'https://market-price-api.herokuapp.com/'
             : 'http://localhost:8888/'
       })
       .then(res => {

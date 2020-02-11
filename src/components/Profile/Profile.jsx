@@ -41,7 +41,10 @@ const Profile = ({ apiKey, setApiKey }) => {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-          baseURL: 'https://market-price-api.herokuapp.com//'
+					baseURL:
+						process.env.NODE_ENV !== 'development'
+							? 'https://market-price-api.herokuapp.com/'
+							: 'http://localhost:8888/'
         }
       )
       setApiKey(response.data.key)
