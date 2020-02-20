@@ -5,14 +5,16 @@ describe('React Client Tests for Docs Page', () => {
     cy.visit('docs')
   })
   it('Clicks on a Tab on left Menu', () => {
+    cy.contains('Menu').click()
     cy.contains('Reference').click()
-    cy.contains('Latest Price By Date Range Endpoint').click()
+    cy.contains('Latest Price By Date Range Endpoint')
+    cy.contains('Menu').click()
   })
 
   it('hovers over a tooltip', () => {
     cy.get(':nth-child(3) > .left-article > p > .question')
       .first()
-      .trigger('mouseover')
+      .trigger('mouseover', {force: true})
     cy.contains('You can scroll the URL below horizontally')
   })
 })

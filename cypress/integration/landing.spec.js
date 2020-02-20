@@ -13,7 +13,7 @@ describe('tests the marketing page', () => {
   })
 
   it('finds table nav items', () => {
-    cy.contains('TABLE').click()
+    cy.contains('GET DATA').click()
   })
 
   it('returns home', () => {

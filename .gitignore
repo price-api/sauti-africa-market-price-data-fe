@@ -21,6 +21,7 @@
 .env.production.local
 
 cypress.env.json
+cypress/screenshots
 /cypress/screenshots/*.png
 /cypress/videos/*.mp4
 
